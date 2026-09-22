@@ -2,8 +2,12 @@
   'use strict';
 
   const PAGE = /\/quest-home(?:\/|$|\?)/;
+  const COMPACT_Q = '(max-width: 480px), (pointer: coarse)';
   const Kit = () => window.LunarisKit;
   const orbUrl = () => chrome.runtime.getURL('media/orb.png');
+  const mq = typeof window.matchMedia === 'function'
+    ? window.matchMedia(COMPACT_Q)
+    : { matches: false };
 
   let mounted = null;
   let cache = new Map();
@@ -98,37 +102,41 @@
     const actions = K.el('div', { class: 'lnr-actions' }, [ignite, hide]);
     const hint = K.el('div', { class: 'lnr-hint', text: 'Runs every eligible quest at once. Values show percent complete.' });
 
-    const panel = K.el('div', { class: 'lnr-panel', dataset: { closed: '0' } }, [
+    const panel = K.el('div', { class: 'lnr-panel', dataset: { closed: mq.matches ? '1' : '0' } }, [
       hero,
       K.el('div', { class: 'lnr-body' }, [status, list, actions, hint])
     ]);
 
     const fabRing = K.fabRing(64);
     const pulse = K.el('div', { class: 'lnr-pulse' });
-    const fab = K.el('button', { class: 'lnr-fab', type: 'button', title: 'lunaris-Auto' }, [
-      pulse,
-      fabRing,
-      K.el('img', { src: orbUrl(), alt: '' })
-    ]);
+    const fab = K.el('button', {
+      class: 'lnr-fab',
+      type: 'button',
+      title: 'lunaris-Auto',
+      'aria-label': 'lunaris-Auto quests',
+      'aria-expanded': String(!mq.matches)
+    }, [pulse, fabRing]);
 
     dock.appendChild(panel);
     dock.appendChild(fab);
     root.appendChild(dock);
     shadow.appendChild(root);
 
-    const ui = { wrap, shadow, root, panel, list, badge, statLine, ignite, hide, fab, fabRing, canvas, stars: null, open: true };
+    const ui = { wrap, shadow, root, panel, list, badge, statLine, ignite, hide, fab, fabRing, moon: null, orb: null, canvas, stars: null, stylesReady: false, open: !mq.matches };
 
     fab.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       ui.open = !ui.open;
       panel.dataset.closed = ui.open ? '0' : '1';
+      fab.setAttribute('aria-expanded', String(ui.open));
     });
 
     hide.addEventListener('click', (e) => {
       e.preventDefault();
       ui.open = false;
       panel.dataset.closed = '1';
+      fab.setAttribute('aria-expanded', 'false');
     });
 
     ignite.addEventListener('click', (e) => {
@@ -136,7 +144,36 @@
       launch(ui);
     });
 
+    applyMode(ui, mq.matches);
+
     return ui;
+  }
+
+  // Compact mode = phone/small viewport/coarse pointer: CSS moon instead of
+  // orb.png, no starfield canvas, panel closed until tapped so it never
+  // covers the quest list. Full mode keeps the orb and stars.
+  function applyMode(ui, compact) {
+    const K = Kit();
+    ui.root.dataset.mode = compact ? 'compact' : 'full';
+    if (compact) {
+      if (!ui.moon) ui.moon = K.el('span', { class: 'lnr-moon-dot' });
+      if (!ui.moon.parentNode) ui.fab.appendChild(ui.moon);
+      if (ui.orb && ui.orb.parentNode) ui.orb.parentNode.removeChild(ui.orb);
+      if (ui.stars) {
+        ui.stars.stop();
+        ui.stars = null;
+      }
+      if (ui.open) {
+        ui.open = false;
+        ui.panel.dataset.closed = '1';
+        ui.fab.setAttribute('aria-expanded', 'false');
+      }
+    } else {
+      if (!ui.orb) ui.orb = K.el('img', { src: orbUrl(), alt: '' });
+      if (!ui.orb.parentNode) ui.fab.appendChild(ui.orb);
+      if (ui.moon && ui.moon.parentNode) ui.moon.parentNode.removeChild(ui.moon);
+      if (ui.stylesReady && !ui.stars) ui.stars = K.starfield(ui.canvas);
+    }
   }
 
   function launch(ui) {
@@ -209,7 +246,9 @@
     const ui = build();
     mounted = ui;
     Kit().injectStyles(ui.shadow, 'surface/kit.css').then(() => {
-      ui.stars = Kit().starfield(ui.canvas);
+      if (mounted !== ui) return;
+      ui.stylesReady = true;
+      applyMode(ui, mq.matches);
     });
     document.documentElement.appendChild(ui.wrap);
     renderList(ui);
@@ -238,6 +277,13 @@
     if (ev.source !== window || !ev.data) return;
     onBus(ev.data);
   });
+
+  // React to rotation / window resize crossing the compact threshold.
+  const onCompactChange = (e) => {
+    if (mounted) applyMode(mounted, !!e.matches);
+  };
+  if (typeof mq.addEventListener === 'function') mq.addEventListener('change', onCompactChange);
+  else if (typeof mq.addListener === 'function') mq.addListener(onCompactChange);
 
   function watchNav() {
     let last = location.href;
