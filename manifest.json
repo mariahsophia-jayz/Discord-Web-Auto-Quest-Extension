@@ -1,33 +1,55 @@
 {
   "manifest_version": 3,
-  "name": "Discord Web Auto Quest Extension",
-  "version": "1.2.6",
-  "description": "Automatically complete Discord quests in the browser without any manual work",
+  "name": "Lunaris Auto",
+  "short_name": "lunaris-Auto",
+  "version": "2.0.0",
+  "version_name": "2.0.0 luna",
+  "description": "Lunaris Auto quietly tracks and advances quest progress with a smooth overlay.",
+  "homepage_url": "https://lunaris.local",
   "icons": {
-    "16": "assets/icon.png",
-    "48": "assets/icon.png",
-    "128": "assets/icon.png"
+    "16": "media/mark.png",
+    "32": "media/mark.png",
+    "48": "media/mark.png",
+    "128": "media/mark.png"
+  },
+  "action": {
+    "default_title": "lunaris-Auto",
+    "default_popup": "shell/popup.html",
+    "default_icon": {
+      "16": "media/mark.png",
+      "32": "media/mark.png",
+      "48": "media/mark.png"
+    }
   },
   "permissions": [
     "declarativeNetRequestWithHostAccess",
     "scripting",
+    "storage",
     "activeTab"
   ],
   "host_permissions": [
     "https://*.discord.com/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "core/worker.js"
   },
   "content_scripts": [
     {
-      "matches": ["https://discord.com/*", "https://canary.discord.com/*"],
-      "js": ["quest-home.js"],
+      "matches": [
+        "https://discord.com/*",
+        "https://canary.discord.com/*",
+        "https://ptb.discord.com/*"
+      ],
+      "js": ["surface/kit.js", "surface/dock.js"],
       "run_at": "document_idle"
     },
     {
-      "matches": ["https://discord.com/*", "https://canary.discord.com/*"],
-      "js": ["user-agent-override.js"],
+      "matches": [
+        "https://discord.com/*",
+        "https://canary.discord.com/*",
+        "https://ptb.discord.com/*"
+      ],
+      "js": ["orbit/veil.js"],
       "run_at": "document_start",
       "world": "MAIN"
     }
@@ -35,10 +57,20 @@
   "declarative_net_request": {
     "rule_resources": [
       {
-        "id": "ruleset_1",
+        "id": "luna_headers",
         "enabled": true,
-        "path": "rules.json"
+        "path": "core/headers.json"
       }
     ]
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["media/orb.png", "media/mark.png", "media/mark.svg"],
+      "matches": [
+        "https://discord.com/*",
+        "https://canary.discord.com/*",
+        "https://ptb.discord.com/*"
+      ]
+    }
+  ]
 }
