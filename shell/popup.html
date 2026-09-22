@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>lunaris-Auto</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <img class="hero-img" src="hero.png" alt="" />
+      <div class="hero-copy">
+        <img class="mark" src="../media/mark.png" alt="" />
+        <div>
+          <div class="kicker">lunaris-auto</div>
+          <h1>Quiet quest flow</h1>
+        </div>
+      </div>
+    </header>
+    <main>
+      <p class="lead">Open the quests page, then ignite. Progress is shown as a percentage — not seconds.</p>
+      <label class="switch">
+        <input id="auto" type="checkbox" />
+        <span>Auto-ignite on quest page</span>
+      </label>
+      <div class="pace">
+        <button id="swift" type="button" data-pace="swift">Swift</button>
+        <button id="calm" type="button" data-pace="calm">Calm</button>
+      </div>
+      <p class="note" id="note">Swift runs quests in parallel with tighter intervals.</p>
+      <div class="foot">
+        <span id="ver">v—</span>
+        <span>lunaris-Auto</span>
+      </div>
+    </main>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

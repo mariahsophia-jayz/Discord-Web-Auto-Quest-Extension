@@ -1,0 +1,128 @@
+:root {
+  --bg: #070b14;
+  --ink: #f5f2ff;
+  --mute: #9aa3c7;
+  --cyan: #6ee7d8;
+  --line: rgba(201, 184, 255, 0.16);
+  --font: ui-sans-serif, "Segoe UI", Inter, system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  width: 340px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+}
+
+.wrap { overflow: hidden; }
+
+.hero {
+  position: relative;
+  height: 132px;
+}
+
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 16px;
+  background: linear-gradient(180deg, transparent 10%, rgba(7, 11, 20, 0.92));
+}
+
+.mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.kicker {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  font-weight: 700;
+}
+
+h1 {
+  margin: 2px 0 0;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+}
+
+main { padding: 16px 16px 18px; }
+
+.lead {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--mute);
+  line-height: 1.45;
+}
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 650;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  cursor: pointer;
+}
+
+.switch input { accent-color: #6ee7d8; }
+
+.pace {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.pace button {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.03);
+  color: var(--ink);
+  border-radius: 12px;
+  padding: 10px 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pace button[data-on="1"] {
+  background: linear-gradient(180deg, #d9fff7, #6ee7d8);
+  color: #061018;
+  border-color: transparent;
+}
+
+.note {
+  margin: 12px 0 0;
+  font-size: 11px;
+  color: var(--mute);
+}
+
+.foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+  font-size: 11px;
+  color: #6b7394;
+}
